@@ -4,7 +4,7 @@ const fs = require('fs');
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('пиздец')
-		.setDescription('Удалить сообщения пользователя'),
+		.setDescription('призвать бота в войс'),
 		
 	async execute(interaction) {
 

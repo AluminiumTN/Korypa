@@ -51,14 +51,15 @@ const { joinVoiceChannel, createAudioPlayer, createAudioResource, entersState, S
 const player = createAudioPlayer();
 const googleTTS = require('google-tts-api');
 
+
+
+// сохраняет сообщения
 client.on('messageCreate', (message) => {
-  // Замените 'ID_канала' на ID канала, с которого вы хотите сохранять сообщения
   if (message.channel.id === '1201884376682737684') {
 
     if (message.author.bot)
     return;
 
-  // Проверьте, содержит ли сообщение упоминания пользователей или ролей
   if (message.mentions.users.size > 0 || message.mentions.roles.size > 0)
   return;
 
@@ -70,22 +71,71 @@ client.on('messageCreate', (message) => {
       attachments: message.attachments.map(attachment => attachment.url),
     };
 
-    fs.readFile('messages.json', (err, content) => {
+    fs.readFile('./JSON/messages.json', (err, content) => {
       if (err) throw err;
       const jsonContent = JSON.parse(content);
       jsonContent.messages.push(data);
 
-      fs.writeFile('messages.json', JSON.stringify(jsonContent, null, 2), (err) => {
+      fs.writeFile('./JSON/messages.json', JSON.stringify(jsonContent, null, 2), (err) => {
         if (err) throw err;
         console.log('Сообщение сохранено!');
       });
     });
   }
 });
+
+
+
+// функция для хуесоса людей
+
+client.on('messageCreate', async (message) => {
+  if (message.channel.id === '1201884376682737684') {
+    if (message.author.bot)
+    return;
+// id бота корочи и в ppls.json людей которых хуесосить
+    if (message.mentions.has('1190628066859421706') ) {
+
+      fs.readFile('./JSON/users.json', (err, content) => {
+        if (err) throw err;
+        const userIds = JSON.parse(content);
+
+        if (userIds.includes(message.author.id)) {
+
+       fs.readFile('./JSON/messages.json', (err, content) => {
+        if (err) throw err;
+        const jsonContent = JSON.parse(content);
+        const messages = jsonContent.messages;
+
+        fs.readFile('./JSON/badwords.json', (err, badWordsContent) => {
+          if (err) throw err;
+          const badWords = JSON.parse(badWordsContent);
+
+          const badMessages = messages.filter(message => badWords.some(badWord => message.content.includes(badWord)));
+          const randomMessage = badMessages[Math.floor(Math.random() * badMessages.length)];
+
+          if (randomMessage.content && randomMessage.content.trim() !== '') {
+            message.channel.send(randomMessage.content);
+          }
+          
+          if (randomMessage.attachments && randomMessage.attachments.length > 0) {
+            randomMessage.attachments.forEach((attachmentUrl) => {
+              message.channel.send(attachmentUrl);
+            });
+          }
+        });
+      });
+    }
+    });
+  }
+  }
+  
+});
+
+
+// функа для случайных сообщения из бд
     
 let messageCount = 0;
 client.on('messageCreate', async (message) => {
-  // Замените 'ID_канала' на ID канала, с которого вы хотите отправлять случайные сообщения
   if (message.channel.id === '1201884376682737684') {
     if (message.author.bot)
     return;
@@ -95,19 +145,18 @@ client.on('messageCreate', async (message) => {
     if (messageCount >= 60) {
       messageCount = 0;
 
-     fs.readFile('messages.json', (err, content) => {
+     fs.readFile('./JSON/messages.json', (err, content) => {
       if (err) throw err;
       const jsonContent = JSON.parse(content);
       const messages = jsonContent.messages;
 
-      // Выберите случайное сообщение
       const randomMessage = messages[Math.floor(Math.random() * messages.length)];
 
       if (randomMessage.content && randomMessage.content.trim() !== '') {
         message.channel.send(randomMessage.content);
       }
       
-      // Если есть вложения, отправьте их URL
+
        if (randomMessage.attachments && randomMessage.attachments.length > 0) {
         randomMessage.attachments.forEach((attachmentUrl) => {
           message.channel.send(attachmentUrl);
@@ -120,59 +169,10 @@ client.on('messageCreate', async (message) => {
 });
 
 
+// хуйни в войс чате
+
 let interval;
 
-
-client.on(Events.InteractionCreate, async (interaction) => {
-  const member = interaction.member;
-const allowedRoles = ["1179830414395854878"]
-if (!member.roles.cache.has(allowedRoles)) {
-
-
-
-	if (interaction.commandName === 'удалить-из-дб') {
-		const user = interaction.options.getUser('user');
-		const quantity = interaction.options.getInteger('count');
-
-		fs.readFile('messages.json', (err, content) => {
-			if (err) throw err;
-			let jsonContent = JSON.parse(content);
-			let messages = jsonContent.messages;
-
-			// Реверсивное изменение порядка сообщений
-			messages = messages.reverse();
-
-			let deletedCount = 0;
-
-			// Фильтруем сообщения, оставляя только те, которые не от выбранного пользователя
-			messages = messages.filter(msg => {
-				if (msg.author === user.username && deletedCount < quantity) {
-					deletedCount++;
-					return false;
-				}
-				return true;
-			});
-
-			// Возвращаем сообщения в исходный порядок
-			messages = messages.reverse();
-
-			jsonContent.messages = messages;
-
-			fs.writeFile('messages.json', JSON.stringify(jsonContent, null, 2), (err) => {
-				if (err) throw err;
-				console.log(`Удалено ${deletedCount} сообщений пользователя ${user.username}!`);
-			});
-		});
-
-		await interaction.reply(`Удалено ${quantity} сообщений пользователя ${user.username}!`);
-	}
-} else {
-  return interaction.reply(`1`);
-}
-  
-
-});
- 
 client.on(Events.InteractionCreate, async (interaction) => {
 
 if (interaction.commandName === 'пиздец') {
@@ -184,27 +184,27 @@ if (interaction.commandName === 'пиздец') {
       adapterCreator: channel.guild.voiceAdapterCreator,
     });
 
-    // Остановить предыдущий интервал, если он существует
+
     if (interval) clearInterval(interval);
 
     interval = setInterval(() => {
-      fs.readFile('messages.json', (err, content) => {
+      fs.readFile('./JSON/messages.json', (err, content) => {
         if (err) throw err;
         const jsonContent = JSON.parse(content);
         const messages = jsonContent.messages;
 
-        // Выберите случайное сообщение
+       
         const randomMessage = messages[Math.floor(Math.random() * messages.length)];
 
         if (randomMessage.content && randomMessage.content.trim() !== '') {
-          // Создание URL для TTS
+        
           const url = googleTTS.getAudioUrl(randomMessage.content, {
             lang: 'ru',
             slow: false,
             host: 'https://translate.google.com',
           });
 
-          // Создание аудиоресурса и воспроизведение его
+      
           const resource = createAudioResource(url, {
             inputType: StreamType.Arbitrary,
           });
@@ -223,14 +223,10 @@ if (interaction.commandName === 'пиздец') {
 
 
 client.on('voiceStateUpdate', (oldState, newState) => {
-  // Если пользователь вышел из голосового канала
   if (oldState.channelId && !newState.channelId) {
-    // Получить голосовой канал, из которого вышел пользователь
     const channel = oldState.channel;
 
-    // Проверить, остались ли в канале другие участники
     if (channel.members.size === 0) {
-      // Если в канале больше нет участников, остановить интервал и отключиться
       if (interval) clearInterval(interval);
       const connection = getVoiceConnection(oldState.guild.id);
       if (connection) connection.destroy();
