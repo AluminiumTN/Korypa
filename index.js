@@ -74,6 +74,12 @@ client.on('messageCreate', (message) => {
     fs.readFile('./JSON/messages.json', (err, content) => {
       if (err) throw err;
       const jsonContent = JSON.parse(content);
+      
+      // Удаляем первое сообщение в массиве
+      if (jsonContent.messages.length > 0) {
+        jsonContent.messages.shift();
+      }
+
       jsonContent.messages.push(data);
 
       fs.writeFile('./JSON/messages.json', JSON.stringify(jsonContent, null, 2), (err) => {
@@ -234,3 +240,104 @@ client.on('voiceStateUpdate', (oldState, newState) => {
   }
 });
 
+
+// рандом реакции
+
+client.on('messageCreate', async message => {
+  if (message.channel.id === '1201884376682737684') {
+  try {
+      // Список реакций, которые бот может использовать
+      const reactions = ['☠️', '😱', '😈', '💀', '😭', '🙏', '🗣️', ':mamkanasinga~2:', '😡', '🔥', '🕯️', '🦼', '🏚️', '🦆', '🪵', '🐘', '🇿', '🇻', '🇴', '🥶', '😨', '👹', '🤨', '📜'];
+
+      // Вероятность реакции (например, 10%)
+      const reactionProbability = 0.2;
+
+      // Если случайное число меньше или равно вероятности реакции, бот добавляет реакцию
+      if (Math.random() <= reactionProbability) {
+          // Выбрать случайную реакцию из списка
+          const reaction = reactions[Math.floor(Math.random() * reactions.length)];
+
+          // Добавить реакцию к сообщению
+          await message.react(reaction);
+          console.log(`Бот добавил реакцию '${reaction}' к сообщению.`);
+      }
+  } catch (error) {
+      console.error(`Не удалось добавить реакцию к сообщению.`, error);
+  }
+}
+});
+
+
+client.on('messageCreate', message => {
+
+  let extension = message.attachments.first() ? message.attachments.first().name.split('.').pop() : '';
+  let forbiddenExtensions = ['zip', 'rar', '7z', 'gz', 'bz2', 'exe', 'msi', 'iso', 'img', 'dmg', 'vhd'];
+
+
+  let allowedRole = ['1179830414395854878', '1191282269483192401'];
+
+  if (forbiddenExtensions.includes(extension)) {
+  
+    if (!message.member.roles.cache.some(role => allowedRole.includes(role.id))) {
+      message.delete();
+      message.author.send('sosi penis loshara');
+    }
+  }
+});
+
+const Canvas = require('canvas');
+const fetch = require('node-fetch');
+const Discord = require('discord.js');
+const sharp = require('sharp');
+let data = JSON.parse(fs.readFileSync('./JSON/messages.json', 'utf-8'));
+
+client.on('messageCreate', async message => {
+  if (message.author.bot) return;
+  messageCount++;
+ if (message.channel.id === '1201884376682737684') {
+  if (messageCount % 60 === 0) {
+      let msg = data.messages[Math.floor(Math.random() * data.messages.length)];
+
+
+      const baseImg = new Canvas.Image();
+      baseImg.src = './assets/mamamia.jpg'; 
+
+  
+      const baseImgInfo = await sharp(baseImg.src).metadata();
+
+     
+      const canvas = Canvas.createCanvas(baseImgInfo.width, baseImgInfo.height);
+      const ctx = canvas.getContext('2d');
+
+   
+      ctx.drawImage(baseImg, 0, 0, canvas.width, canvas.height);
+
+
+      let randomMessage = data.messages[Math.floor(Math.random() * data.messages.length)];
+      while (!randomMessage.attachments || !randomMessage.attachments[0] || randomMessage.attachments[0].match(/.(mp3|ogg|mp4)$/i)) {
+          randomMessage = data.messages[Math.floor(Math.random() * data.messages.length)];
+      }
+
+      const img = new Canvas.Image();
+      try {
+        const response = await fetch(randomMessage.attachments[0]);
+        const buffer = await response.buffer();
+        img.src = buffer;
+
+        ctx.drawImage(img, 57, 52, 568, 548); 
+      } catch (error) {
+        console.error('Error loading image:', error);
+        return; 
+      }
+
+      ctx.font ='50px Times New Roman';
+      ctx.fillStyle ='#ffffff';
+      ctx.fillText(msg.content.split('\n')[0], canvas.width /2 -ctx.measureText(msg.content.split('\n')[0]).width /2 ,700); // Centered text
+
+      const attachment= new Discord.AttachmentBuilder(canvas.toBuffer(), 'modifiedImage.png');
+
+    
+      await message.channel.send({ files: [attachment] });
+   }
+  }
+});
