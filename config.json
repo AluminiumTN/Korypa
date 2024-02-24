@@ -1,7 +1,10 @@
 {
-    "token": "",
-    "mongodb": ""
+    "token": "MTE5MDYyODA2Njg1OTQyMTcwNg.GWOwti.Hh3Ysl-T3oW1o9fytMFjWMuKSD5LuqVT7Y3Wu4",
+    "mongodb": "mongodb://whynothing:aluminium1337@ac-nbbgulv-shard-00-00.c6puirq.mongodb.net:27017,ac-nbbgulv-shard-00-01.c6puirq.mongodb.net:27017,ac-nbbgulv-shard-00-02.c6puirq.mongodb.net:27017/?ssl=true&replicaSet=atlas-10pj2h-shard-0&authSource=admin&retryWrites=true&w=majority",
 
-
+    "everyone": "605297471718948864",
+    "ticketParent": "1080559461241995294",
+    "openticket": "1080559536345206804",
+    "transcripts": "1080559598777413714"
 }
 

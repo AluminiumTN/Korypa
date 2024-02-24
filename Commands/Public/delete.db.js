@@ -3,25 +3,19 @@ const fs = require('fs');
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName('удалить-из-дб')
-		.setDescription('Удалить сообщения пользователя')
-		.addUserOption(option => option.setName('user').setDescription('Выберите пользователя').setRequired(true))
-		.addIntegerOption(option => option.setName('count').setDescription('Введите количество сообщений для удаления').setRequired(true)),
+		.setName('delete-user-msg')
+		.setDescription('Dlete user messages from database')
+		.addUserOption(option => option.setName('user').setDescription('Choose user').setRequired(true))
+		.addIntegerOption(option => option.setName('count').setDescription('Choose count of messages').setRequired(true)),
 	async execute(interaction) {
 
-		const roleId = '1179830414395854878';
-
-		if (!interaction.member.roles.cache.has(roleId)) {
-		  return interaction.reply({content: 'У вас нет прав для использования этой команды.', ephemeral: true});
-		}
-		
-		
-		
-			if (interaction.commandName === 'удалить-из-дб') {
 				const user = interaction.options.getUser('user');
 				const quantity = interaction.options.getInteger('count');
+				const serverId = interaction.guild.name;
+				const channelId = interaction.channel.id;
+				const path = `./JSON/${serverId}/messages/${channelId}.json`;
 		
-				fs.readFile('./JSON/messages.json', (err, content) => {
+				fs.readFile(path, (err, content) => {
 					if (err) throw err;
 					let jsonContent = JSON.parse(content);
 					let messages = jsonContent.messages;
@@ -42,15 +36,12 @@ module.exports = {
 		
 					jsonContent.messages = messages;
 		
-					fs.writeFile('./JSON/messages.json', JSON.stringify(jsonContent, null, 2), (err) => {
+					fs.writeFile(path, JSON.stringify(jsonContent, null, 2), (err) => {
 						if (err) throw err;
-						console.log(`Удалено ${deletedCount} сообщений пользователя ${user.username}!`);
+	
 					});
 				});
 		
-				await interaction.reply({content: `Удалено ${quantity} сообщений пользователя ${user.username}!`, ephemeral: true});
+				await interaction.reply({content: `Deleted ${quantity} from user ${user.username}!`, ephemeral: true});
 			}
-
-		  
-		}	
 }

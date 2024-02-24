@@ -3,37 +3,36 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
     data: new SlashCommandBuilder()
-  .setName('добавить-хуесоса')
-  .setDescription('Добавляет юзера в бд чтобы жетска хуесосить')
-  .addStringOption(option => option.setName('userid').setDescription('1').setRequired(true)),
-
+  .setName('adduser')
+  .setDescription('Add users in db that the bot will respond to when its tagged.')
+  .addStringOption(option => option.setName('userid').setDescription('Add user id').setRequired(true)),
 
   async execute(interaction) {
 
-    const roleId = '1179830414395854878';
-
-    if (!interaction.member.roles.cache.has(roleId)) {
-        return interaction.reply({content: 'У вас нет прав для использования этой команды.', ephemeral: true});
-    }
 		
-      const userId = interaction.options.getString('userid');
+    const userId = interaction.options.getString('userid');
+    const serverId = interaction.guild.name;
 
-     fs.readFile('./JSON/users.json', (err, content) => {
+    const path = `./JSON/${serverId}/users.json`;
+
+    if (!fs.existsSync(path)) {
+      fs.writeFileSync(path, JSON.stringify([], null, 2));
+    }
+
+    fs.readFile(path, (err, content) => {
       if (err) throw err;
       const userIds = JSON.parse(content);
 
       if (!userIds.includes(userId)) {
         userIds.push(userId);
 
-        fs.writeFile('./JSON/users.json', JSON.stringify(userIds, null, 2), (err) => {
+        fs.writeFile(path, JSON.stringify(userIds, null, 2), (err) => {
           if (err) throw err;
-          interaction.reply({content: `ID пользователя ${userId} успешно добавлен в список.`, ephemeral: true});
+          interaction.reply({content: `ID ${userId} added`, ephemeral: true});
         });
       } else {
-        interaction.reply({content: `ID пользователя ${userId} уже есть в списке.`, ephemeral: true});
+        interaction.reply({content: `ID ${userId} already exist.`, ephemeral: true});
       }
-      });
-
+    });
   },
-
 };
