@@ -1,10 +1,11 @@
 const fs = require('fs');
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
   .setName('addwords')
   .setDescription('Write words in database when you tag bot')
+  .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
   .addStringOption(option => option.setName('wrods').setDescription('Write here words and bot catch messages with this word from database').setRequired(true)),
 
   async execute(interaction) {

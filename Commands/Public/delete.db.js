@@ -1,10 +1,11 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const fs = require('fs');
 
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('delete-user-msg')
 		.setDescription('Dlete user messages from database')
+		.setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
 		.addUserOption(option => option.setName('user').setDescription('Choose user').setRequired(true))
 		.addIntegerOption(option => option.setName('count').setDescription('Choose count of messages').setRequired(true)),
 	async execute(interaction) {

@@ -1,5 +1,5 @@
 const {PermissionFlagsBits, EmbedBuilder} = require('discord.js');
-const SuggestionSchema = require('../../Models/suggestion');
+
 
 
 module.exports = {

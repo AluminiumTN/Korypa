@@ -1,11 +1,12 @@
 const fs = require('fs');
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const path = require('path');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('addchat')
         .setDescription('Add chat to store data from channel')
+        .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
         .addStringOption(option => option.setName('channel').setDescription('Channel id').setRequired(true)),
 
     async execute(interaction) {

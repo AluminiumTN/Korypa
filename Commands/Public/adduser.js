@@ -1,10 +1,11 @@
 const fs = require('fs');
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
   .setName('adduser')
   .setDescription('Add users in db that the bot will respond to when its tagged.')
+  .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
   .addStringOption(option => option.setName('userid').setDescription('Add user id').setRequired(true)),
 
   async execute(interaction) {

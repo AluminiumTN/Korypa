@@ -199,7 +199,7 @@ client.on('messageCreate', async (message) => {
 
   messageCount++;
 
-  if (messageCount >= 5) {
+  if (messageCount >= 25) {
     messageCount = 0;
 
     fs.readFile(path, (err, content) => {
@@ -316,7 +316,7 @@ client.on('messageCreate', async message => {
       channels = JSON.parse(fs.readFileSync(channelsPath, 'utf8')).channels;
     }
 
-    const reactionProbability = 0.2;
+    const reactionProbability = 0.05;
 
     if (reactions && Math.random() <= reactionProbability && channels.includes(message.channel.id)) {
       const reaction = reactions[Math.floor(Math.random() * reactions.length)];
@@ -369,7 +369,7 @@ client.on('messageCreate', async message => {
   if (message.author.bot) return;
   messageCount++;
 
-  if (messageCount % 3 === 0) {
+  if (messageCount % 15 === 0) {
     const hasAttachment = data.messages.some(message => message.attachments && message.attachments.length > 0);
 
     if (!hasAttachment) {
