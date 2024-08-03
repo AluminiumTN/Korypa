@@ -36,6 +36,6 @@ module.exports = {
 
         fs.writeFileSync(filePath, JSON.stringify(jsonContent, null, 2));
 
-        await interaction.reply(`Эмоджи ${emoji} добавлен в базу данных.`);
+
     }
 }
